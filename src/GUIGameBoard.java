@@ -6,18 +6,15 @@
 
 import java.awt.*;
 
-import static java.lang.System.*;
-
 import javax.swing.*;
 import java.awt.event.*;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.Locale;
-import java.util.Stack;
 import javax.imageio.ImageIO;
 
 public class GUIGameBoard extends JPanel implements ActionListener, MouseListener {
+    private boolean playedd;
+    private boolean firstroad;
+    private boolean secondroad;
     ParentPanel p;
     private boolean buildSettlement, buildRoad;
     private boolean buildfirsts;
@@ -25,7 +22,7 @@ public class GUIGameBoard extends JPanel implements ActionListener, MouseListene
     BufferedImage bandit2;
     private boolean buildCity;
     private JComboBox<String> seeDeck, build, trade;
-    private JButton development;
+    private JComboBox development;
     private boolean ilovemen=false;
     private GameState GameState;
     private boolean bandit;
@@ -45,12 +42,15 @@ public class GUIGameBoard extends JPanel implements ActionListener, MouseListene
     private String[] buildDrop = {"Build", "Road", "Settlement", "City", "Development Card"};
     private JButton nextTurn;
     private Color color;
-
+    private String[]d={"Develop", "knight","2 road", "2 resource", "victory"};
     public void setBandit(boolean bandit) {
         this.bandit = bandit;
     }
-
+    public void setPlayedd(boolean b){
+        playedd=b;
+    }
     public GUIGameBoard(ParentPanel p) {
+        playedd=false;
         tempp=0;
         first=true;
         second=false;
@@ -60,6 +60,8 @@ public class GUIGameBoard extends JPanel implements ActionListener, MouseListene
         catch(Exception E){
             System.out.println("MATTHEW LOVES");
         }
+        firstroad=false;
+        secondroad=false;
         buildfirsts=true;
         buildfirstr=false;
         isfirstset=true;
@@ -85,7 +87,7 @@ public class GUIGameBoard extends JPanel implements ActionListener, MouseListene
         build = new JComboBox(buildDrop);
         seeDeck = new JComboBox(deckDrop);
         trade = new JComboBox(tradeDrop);
-        development = new JButton("Develop");
+        development = new JComboBox(d);
         roll = new JButton("roll");
         nextTurn.addActionListener(this);
 
@@ -1229,7 +1231,78 @@ public class GUIGameBoard extends JPanel implements ActionListener, MouseListene
 
         if(!first && ! second)
         {
+                if(e.getSource()==development){
+                    if(development.getSelectedItem().toString()=="2 resource") {
 
+                        while (true) {
+                            String str = (JOptionPane.showInputDialog("What is one resource you would like (ore, wood, wheat, clay, sheep"));
+                            str = str.toLowerCase();
+                            if (str.equals("sheep")) {
+                                GameState.players.get(GameState.getCurrentPlayer()).addResourceCard(new Sheep());
+                                break;
+                            }
+                            if (str.equals("ore")) {
+                                GameState.players.get(GameState.getCurrentPlayer()).addResourceCard(new Ore()); break;
+                            }
+                            if (str.equals("wood")) {
+                                GameState.players.get(GameState.getCurrentPlayer()).addResourceCard(new Wood()); break;
+                            }
+                            if (str.equals("wheat")) {
+                                GameState.players.get(GameState.getCurrentPlayer()).addResourceCard(new Wheat()); break;
+                            }
+                            if (str.equals("clay")) {
+                                GameState.players.get(GameState.getCurrentPlayer()).addResourceCard(new Clay()); break;
+                            }
+                            else{
+                                infoBox("try again", "");
+                            }
+                        }
+                        repaint();
+                        while (true) {
+                            String str = (JOptionPane.showInputDialog("What another resource you would like (ore, wood, wheat, clay, sheep"));
+                            str = str.toLowerCase();
+                            if (str.equals("sheep")) {
+                                GameState.players.get(GameState.getCurrentPlayer()).addResourceCard(new Sheep());
+                                break;
+                            }
+                            if (str.equals("ore")) {
+                                GameState.players.get(GameState.getCurrentPlayer()).addResourceCard(new Ore()); break;
+                            }
+                            if (str.equals("wood")) {
+                                GameState.players.get(GameState.getCurrentPlayer()).addResourceCard(new Wood()); break;
+                            }
+                            if (str.equals("wheat")) {
+                                GameState.players.get(GameState.getCurrentPlayer()).addResourceCard(new Wheat()); break;
+                            }
+                            if (str.equals("clay")) {
+                                GameState.players.get(GameState.getCurrentPlayer()).addResourceCard(new Clay()); break;
+                            }
+                            else{
+                                infoBox("try again", "");
+                            }
+                        }
+                        repaint();
+                    }
+                    if(development.getSelectedItem().toString()=="knight"){
+                        boolean flag=false;
+                        for(int i=0;i<4;i++){
+                            if(i!=GameState.currentPlayer){
+                                if(GameState.players.get(i).getResourceCards().size()!=0){
+                                    flag=true;
+                                }
+                            }
+                        }
+                        if(flag) {
+                            setBandit(true);
+                            infoBox("Click the center of a tile to steal from", "");
+                        }
+
+                    }
+                    if(development.getSelectedItem().toString()=="2 road"){
+                        firstroad=true;
+                        infoBox("Click 2 roads to build", "");
+                    }
+                }
             if (e.getSource() == build) {
                 if (build.getSelectedItem().toString() == "Settlement") {
                     buildSettlement = true;
@@ -1317,8 +1390,9 @@ public class GUIGameBoard extends JPanel implements ActionListener, MouseListene
     public void mouseClicked(MouseEvent e) {
         //System.out.println("HERE0");
         boolean xor2=true;
+        boolean xor3=true;
         if(first) {
-            boolean xor=true;
+                boolean xor=true;
 
             if (buildfirsts) {
                 {
@@ -1594,6 +1668,191 @@ public class GUIGameBoard extends JPanel implements ActionListener, MouseListene
 
          if(!first&&!second)
         {
+            if(firstroad){
+               xor3=false;
+                int count=0;
+                boolean flag = false;
+                for (int i = 0; i < 19; i++) {
+                    for (int j = 0; j < 6; j++) {
+                        Tile curr = GameState.tilesList[i];
+                        //System.out.println("TILE "+i+" SPOT "+ j+": x "+curr.getXverticies()[j]+" y "+curr.getYverticies()[j]);
+                        if (canFit(e.getX(), e.getY(), curr.getxroad()[j], curr.getyroad()[j])) {
+//                        //curr.gethascityorsettlement()[j] = 1;
+                            Pair x = two(j);
+                            if (curr.gethascityorsettlement()[x.first()] == 1 || curr.gethascityorsettlement()[x.first()] == 2 || curr.gethascityorsettlement()[x.second()] == 1 || curr.gethascityorsettlement()[x.second()] == 2) {
+                                String c = GameState.players.get(GameState.getCurrentPlayer()).getColor();
+//                              if(!curr.getSettlementColor()[x.first()].equals(null)&&curr.getSettlementColor()[x.first()].equals(c)||curr.getSettlementColor()[x.second()].equals(c))
+//                                flag=true;
+                                if ((curr.getSettlementColor()[x.first()]) == null && curr.getSettlementColor()[x.second()].equals(c)) {
+                                    flag = true;
+                                } else if (curr.getSettlementColor()[x.first()].equals(c) && curr.getSettlementColor()[x.second()] == (null)) {
+                                    flag = true;
+                                }
+//                            else if (curr.getSettlementColor()[x.second()].equals(c) && curr.getSettlementColor()[x.second()]==(null)) {
+//                                flag = true;
+//                            }
+//                            else if (curr.getSettlementColor()[x.second()]==(null) && curr.getSettlementColor()[x.second()].equals(c)) {
+//                                flag = true;
+//                            }
+
+                            }
+
+
+                            Pair y = three(j);
+                            if (curr.getVertexRoads()[y.first()] || curr.getVertexRoads()[y.second()]) {
+                                String c = GameState.players.get(GameState.getCurrentPlayer()).getColor();
+                                if (curr.getVertexColor()[y.first()] == null && curr.getVertexColor()[y.second()] == null) {
+
+                                } else if (curr.getVertexColor()[y.second()] == null) {
+                                    if (curr.getVertexColor()[y.first()].equals(c)) {
+                                        flag = true;
+                                    }
+
+                                } else if (curr.getVertexColor()[y.first()] == null) {
+
+                                    if (curr.getVertexColor()[y.second()].equals(c))
+                                        flag = true;
+                                } else if (curr.getVertexColor()[y.first()].equals(c) && curr.getVertexColor()[y.first()].equals(c)) {
+                                    flag = true;
+                                } else {
+
+                                }
+                            }
+                        }
+
+
+//                        curr.getVertexRoads()[j] = true;
+////                    GameState.players.get(GameState.getCurrentPlayer()).getHasCity()[i][j] = 1;
+//                        repaint();
+//                        buildRoad = false;
+//                        System.out.println("TILE " + i + " SPOT " + j + ": x " + curr.getxroad()[j] + " y " + curr.getyroad()[j]);
+
+                    }
+                }
+
+                for (int i = 0; i < 19; i++) {
+                    for (int j = 0; j < 6; j++) {
+                        Tile curr = GameState.tilesList[i];
+                        //System.out.println("TILE "+i+" SPOT "+ j+": x "+curr.getXverticies()[j]+" y "+curr.getYverticies()[j]);
+                        if (canFit(e.getX(), e.getY(), curr.getxroad()[j], curr.getyroad()[j]) && flag) {
+                            //curr.gethascityorsettlement()[j] = 1;
+                            curr.getVertexColor()[j] = GameState.players.get(GameState.getCurrentPlayer()).getColor();
+                            //GameState.players.get(GameState.getCurrentPlayer()).setSettlements(GameState.players.get(GameState.getCurrentPlayer()).settlementNumber()-1);
+                            curr.getVertexRoads()[j] = true;
+//                    GameState.players.get(GameState.getCurrentPlayer()).getHasCity()[i][j] = 1;
+
+                            count++;
+                            //buildRoad = false;
+                            //     System.out.println("TILE " + i + " SPOT " + j + ": x " + curr.getxroad()[j] + " y " + curr.getyroad()[j]);
+                        }
+                    }
+                }
+                if(count==0){
+                    infoBox("place a road in a valid spot", "");
+                }
+                if(count!=0)
+                {GameState.players.get(GameState.getCurrentPlayer()).setRoads(GameState.players.get(GameState.getCurrentPlayer()).roadNumber()-1);
+                    firstroad=false;
+                    secondroad=true;
+                    repaint();
+                    infoBox("place a second road","");
+
+                }
+
+
+
+
+
+            }
+            if(secondroad&&xor3){
+                System.out.println("ADSHSADHHDAHAD");
+                int count=0;
+                boolean flag = false;
+                for (int i = 0; i < 19; i++) {
+                    for (int j = 0; j < 6; j++) {
+                        Tile curr = GameState.tilesList[i];
+                        //System.out.println("TILE "+i+" SPOT "+ j+": x "+curr.getXverticies()[j]+" y "+curr.getYverticies()[j]);
+                        if (canFit(e.getX(), e.getY(), curr.getxroad()[j], curr.getyroad()[j])) {
+//                        //curr.gethascityorsettlement()[j] = 1;
+                            Pair x = two(j);
+                            if (curr.gethascityorsettlement()[x.first()] == 1 || curr.gethascityorsettlement()[x.first()] == 2 || curr.gethascityorsettlement()[x.second()] == 1 || curr.gethascityorsettlement()[x.second()] == 2) {
+                                String c = GameState.players.get(GameState.getCurrentPlayer()).getColor();
+//                              if(!curr.getSettlementColor()[x.first()].equals(null)&&curr.getSettlementColor()[x.first()].equals(c)||curr.getSettlementColor()[x.second()].equals(c))
+//                                flag=true;
+                                if ((curr.getSettlementColor()[x.first()]) == null && curr.getSettlementColor()[x.second()].equals(c)) {
+                                    flag = true;
+                                } else if (curr.getSettlementColor()[x.first()].equals(c) && curr.getSettlementColor()[x.second()] == (null)) {
+                                    flag = true;
+                                }
+//                            else if (curr.getSettlementColor()[x.second()].equals(c) && curr.getSettlementColor()[x.second()]==(null)) {
+//                                flag = true;
+//                            }
+//                            else if (curr.getSettlementColor()[x.second()]==(null) && curr.getSettlementColor()[x.second()].equals(c)) {
+//                                flag = true;
+//                            }
+
+                            }
+
+
+                            Pair y = three(j);
+                            if (curr.getVertexRoads()[y.first()] || curr.getVertexRoads()[y.second()]) {
+                                String c = GameState.players.get(GameState.getCurrentPlayer()).getColor();
+                                if (curr.getVertexColor()[y.first()] == null && curr.getVertexColor()[y.second()] == null) {
+
+                                } else if (curr.getVertexColor()[y.second()] == null) {
+                                    if (curr.getVertexColor()[y.first()].equals(c)) {
+                                        flag = true;
+                                    }
+
+                                } else if (curr.getVertexColor()[y.first()] == null) {
+
+                                    if (curr.getVertexColor()[y.second()].equals(c))
+                                        flag = true;
+                                } else if (curr.getVertexColor()[y.first()].equals(c) && curr.getVertexColor()[y.first()].equals(c)) {
+                                    flag = true;
+                                } else {
+
+                                }
+                            }
+                        }
+
+
+//                        curr.getVertexRoads()[j] = true;
+////                    GameState.players.get(GameState.getCurrentPlayer()).getHasCity()[i][j] = 1;
+//                        repaint();
+//                        buildRoad = false;
+//                        System.out.println("TILE " + i + " SPOT " + j + ": x " + curr.getxroad()[j] + " y " + curr.getyroad()[j]);
+
+                    }
+                }
+
+                for (int i = 0; i < 19; i++) {
+                    for (int j = 0; j < 6; j++) {
+                        Tile curr = GameState.tilesList[i];
+                        //System.out.println("TILE "+i+" SPOT "+ j+": x "+curr.getXverticies()[j]+" y "+curr.getYverticies()[j]);
+                        if (canFit(e.getX(), e.getY(), curr.getxroad()[j], curr.getyroad()[j]) && flag) {
+                            //curr.gethascityorsettlement()[j] = 1;
+                            curr.getVertexColor()[j] = GameState.players.get(GameState.getCurrentPlayer()).getColor();
+                            //GameState.players.get(GameState.getCurrentPlayer()).setSettlements(GameState.players.get(GameState.getCurrentPlayer()).settlementNumber()-1);
+                            curr.getVertexRoads()[j] = true;
+//                    GameState.players.get(GameState.getCurrentPlayer()).getHasCity()[i][j] = 1;
+                            firstroad=false;
+                            secondroad=false;
+                            count++;
+                            //buildRoad = false;
+                            //     System.out.println("TILE " + i + " SPOT " + j + ": x " + curr.getxroad()[j] + " y " + curr.getyroad()[j]);
+                        }
+                    }
+                }
+                if(count==0){
+                    infoBox("place a road in a valid spot", "");
+                }
+                if(count!=0)
+                {GameState.players.get(GameState.getCurrentPlayer()).setRoads(GameState.players.get(GameState.getCurrentPlayer()).roadNumber()-1);
+                    //infoBox("place a second road","");
+                }
+                repaint();
+            }
             if (bandit) {
                 int flag2 = 0;
                 for (Player m : GameState.players) {
@@ -1631,11 +1890,22 @@ public class GUIGameBoard extends JPanel implements ActionListener, MouseListene
                             }
                             String str = (JOptionPane.showInputDialog("Enter the color of the player who you would like to steal from"));
                             str = str.toLowerCase();
+                            System.out.println(str);
+                            System.out.println(i+" TILE");
                             for (int j = 0; j < curr.getPlayersOnTile().size(); j++) {
                                 Player p = curr.getPlayersOnTile().get(j);
+                                System.out.println(p.getColor()+" "+j);
+
                                 if (p.getColor().equals(str) && !GameState.players.get(GameState.getCurrentPlayer()).getColor().equals(str)) {
+                                    System.out.println(true);
+                                    int ash=0;
+                                    for(int k=0;k<4;k++){
+                                        if(GameState.players.get(k).getColor().equals(p.getColor())){
+                                            ash=k;
+                                        }
+                                    }
                                     count++;
-                                    int c = p.getResourceCards().size()-1;
+                                    int c = p.getResourceCards().size();
                                     int random = (int) (Math.random() * c + 0);
                                     for (int k = 0; k < 19; k++) {
                                         Tile curr2 = GameState.tilesList[k];
@@ -1647,7 +1917,7 @@ public class GUIGameBoard extends JPanel implements ActionListener, MouseListene
 
                                     curr.setBandit(true);
 
-                                    GameState.players.get(GameState.getCurrentPlayer()).steal(j, random);
+                                    GameState.players.get(GameState.getCurrentPlayer()).steal(ash, random);
                                     repaint();
                                     bandit = false;
                                 }
@@ -1660,7 +1930,7 @@ public class GUIGameBoard extends JPanel implements ActionListener, MouseListene
 
 
             }
-        }
+
         {
         if (buildSettlement){
             int count=0;
@@ -1795,6 +2065,7 @@ public class GUIGameBoard extends JPanel implements ActionListener, MouseListene
             repaint();
         }
         buildRoad = false;
+        }
         }
     }
     //1090 483
