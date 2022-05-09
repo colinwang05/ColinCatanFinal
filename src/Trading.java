@@ -240,14 +240,19 @@ public class Trading extends JPanel implements ActionListener {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-
+        g.setColor(Color.white
+        );
         g.drawImage(menuBackground, 0, 0, width, height, null);
+        g.drawString("Cards you will give", (int)(W/15+1.9*5*(W/10)), H/10);
         g.drawImage(clay, W/15, H/10, ((W / 12)*2)-25  , (H / 5)*2,null);
         g.drawImage(ore, (int)(W/15+1.9*(W/10)), H/10, ((W / 12)*2)-25  , (H / 5)*2,null);
         g.drawImage(sheep, (int)(W/15+3.8*(W/10)), H/10, ((W / 12)*2)-25  , (H / 5)*2,null);
         g.drawImage(wheat, (int)(W/15+5.7*(W/10)), H/10, ((W / 12)*2)-25  , (H / 5)*2,null);
         g.drawImage(wood, (int)(W/15+7.6*(W/10)), H/10, ((W / 12)*2)-25  , (H / 5)*2,null);
 
+        g.setColor(Color.white
+        );
+        g.drawString("Cards you will receive", (int)(W/15+1.9*5*(W/10)), (int)(H-(H / 9.1)));
         g.drawImage(clay, W/15, (int)(H-(H / 9.1)), ((W / 12)*2)-25  , (H / 5)*2,null);
         g.drawImage(ore, (int)(W/15+1.9*(W/10)), (int)(H-(H / 9.1)), ((W / 12)*2)-25  , (H / 5)*2,null);
         g.drawImage(sheep, (int)(W/15+3.8*(W/10)), (int)(H-(H / 9.1)), ((W / 12)*2)-25  , (H / 5)*2,null);
@@ -322,6 +327,11 @@ public class Trading extends JPanel implements ActionListener {
         // private int c1,o1,s1,wh1,wo1,c2,o2,s2,wh2,wo2;
         if (e.getSource() == play) {
             String str = play.getSelectedItem().toString();
+            if(str.equals(GameState.players.get(GameState.currentPlayer).getColor())){
+                    infoBox("You can't trade with yourself", "");
+            }
+
+            else
             if(str.equals("red")||str.equals("blue")||str.equals("yellow")||str.equals("white")){
                 for(int i=0;i<4;i++){
                     if(GameState.players.get(i).getColor().equals(str)){

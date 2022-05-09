@@ -16,6 +16,7 @@ public class GUIGameBoard extends JPanel implements ActionListener, MouseListene
     private boolean firstroad;
     private boolean secondroad;
     ParentPanel p;
+    //private boolean playedD;
     private boolean buildSettlement, buildRoad;
     private boolean buildfirsts;
     private boolean buildfirstr;
@@ -49,6 +50,7 @@ public class GUIGameBoard extends JPanel implements ActionListener, MouseListene
     public void setPlayedd(boolean b){
         playedd=b;
     }
+
     public GUIGameBoard(ParentPanel p) {
         playedd=false;
         tempp=0;
@@ -1218,7 +1220,16 @@ public class GUIGameBoard extends JPanel implements ActionListener, MouseListene
 
 
 
-
+    public boolean hasDCard(String str){
+        Player p = GameState.players.get(GameState.getCurrentPlayer());
+        for(DevelopmentCard d: p.getDevelopmentCards()){
+            if(d.getType().equals(str)){
+                p.getDevelopmentCards().remove(d);
+            return true;
+            }
+        }
+        return false;
+    }
 
 
 
@@ -1231,77 +1242,106 @@ public class GUIGameBoard extends JPanel implements ActionListener, MouseListene
 
         if(!first && ! second)
         {
-                if(e.getSource()==development){
-                    if(development.getSelectedItem().toString()=="2 resource") {
 
-                        while (true) {
-                            String str = (JOptionPane.showInputDialog("What is one resource you would like (ore, wood, wheat, clay, sheep"));
-                            str = str.toLowerCase();
-                            if (str.equals("sheep")) {
-                                GameState.players.get(GameState.getCurrentPlayer()).addResourceCard(new Sheep());
-                                break;
-                            }
-                            if (str.equals("ore")) {
-                                GameState.players.get(GameState.getCurrentPlayer()).addResourceCard(new Ore()); break;
-                            }
-                            if (str.equals("wood")) {
-                                GameState.players.get(GameState.getCurrentPlayer()).addResourceCard(new Wood()); break;
-                            }
-                            if (str.equals("wheat")) {
-                                GameState.players.get(GameState.getCurrentPlayer()).addResourceCard(new Wheat()); break;
-                            }
-                            if (str.equals("clay")) {
-                                GameState.players.get(GameState.getCurrentPlayer()).addResourceCard(new Clay()); break;
-                            }
-                            else{
-                                infoBox("try again", "");
-                            }
-                        }
-                        repaint();
-                        while (true) {
-                            String str = (JOptionPane.showInputDialog("What another resource you would like (ore, wood, wheat, clay, sheep"));
-                            str = str.toLowerCase();
-                            if (str.equals("sheep")) {
-                                GameState.players.get(GameState.getCurrentPlayer()).addResourceCard(new Sheep());
-                                break;
-                            }
-                            if (str.equals("ore")) {
-                                GameState.players.get(GameState.getCurrentPlayer()).addResourceCard(new Ore()); break;
-                            }
-                            if (str.equals("wood")) {
-                                GameState.players.get(GameState.getCurrentPlayer()).addResourceCard(new Wood()); break;
-                            }
-                            if (str.equals("wheat")) {
-                                GameState.players.get(GameState.getCurrentPlayer()).addResourceCard(new Wheat()); break;
-                            }
-                            if (str.equals("clay")) {
-                                GameState.players.get(GameState.getCurrentPlayer()).addResourceCard(new Clay()); break;
-                            }
-                            else{
-                                infoBox("try again", "");
-                            }
-                        }
-                        repaint();
+                if(e.getSource()==development){
+                    if(development.getSelectedItem().toString()=="victory point"){
+
                     }
-                    if(development.getSelectedItem().toString()=="knight"){
-                        boolean flag=false;
-                        for(int i=0;i<4;i++){
-                            if(i!=GameState.currentPlayer){
-                                if(GameState.players.get(i).getResourceCards().size()!=0){
-                                    flag=true;
+                    if(!playedd){
+                    if(development.getSelectedItem().toString()=="2 resource") {
+                        if (hasDCard("year of plenty")) {
+                            while (true) {
+                                String str = (JOptionPane.showInputDialog("What is one resource you would like (ore, wood, wheat, clay, sheep"));
+                                str = str.toLowerCase();
+                                if (str.equals("sheep")) {
+                                    GameState.players.get(GameState.getCurrentPlayer()).addResourceCard(new Sheep());
+                                    break;
+                                }
+                                if (str.equals("ore")) {
+                                    GameState.players.get(GameState.getCurrentPlayer()).addResourceCard(new Ore());
+                                    break;
+                                }
+                                if (str.equals("wood")) {
+                                    GameState.players.get(GameState.getCurrentPlayer()).addResourceCard(new Wood());
+                                    break;
+                                }
+                                if (str.equals("wheat")) {
+                                    GameState.players.get(GameState.getCurrentPlayer()).addResourceCard(new Wheat());
+                                    break;
+                                }
+                                if (str.equals("clay")) {
+                                    GameState.players.get(GameState.getCurrentPlayer()).addResourceCard(new Clay());
+                                    break;
+                                } else {
+                                    infoBox("try again", "");
                                 }
                             }
+                            repaint();
+                            while (true) {
+                                String str = (JOptionPane.showInputDialog("What another resource you would like (ore, wood, wheat, clay, sheep"));
+                                str = str.toLowerCase();
+                                if (str.equals("sheep")) {
+                                    GameState.players.get(GameState.getCurrentPlayer()).addResourceCard(new Sheep());
+                                    break;
+                                }
+                                if (str.equals("ore")) {
+                                    GameState.players.get(GameState.getCurrentPlayer()).addResourceCard(new Ore());
+                                    break;
+                                }
+                                if (str.equals("wood")) {
+                                    GameState.players.get(GameState.getCurrentPlayer()).addResourceCard(new Wood());
+                                    break;
+                                }
+                                if (str.equals("wheat")) {
+                                    GameState.players.get(GameState.getCurrentPlayer()).addResourceCard(new Wheat());
+                                    break;
+                                }
+                                if (str.equals("clay")) {
+                                    GameState.players.get(GameState.getCurrentPlayer()).addResourceCard(new Clay());
+                                    break;
+                                } else {
+                                    infoBox("try again", "");
+                                }
+                            }
+                            repaint();
+                            playedd=true;
                         }
-                        if(flag) {
-                            setBandit(true);
-                            infoBox("Click the center of a tile to steal from", "");
+                        else{
+                            infoBox("You don't have that card", "");
                         }
-
+                    }
+                    if(development.getSelectedItem().toString()=="knight") {
+                        if (hasDCard("knight")) {
+                            boolean flag = false;
+                            for (int i = 0; i < 4; i++) {
+                                if (i != GameState.currentPlayer) {
+                                    if (GameState.players.get(i).getResourceCards().size() != 0) {
+                                        flag = true;
+                                    }
+                                }
+                            }
+                            if (flag) {
+                                setBandit(true);
+                                infoBox("Click the center of a tile to steal from", "");
+                            }
+            playedd=true;
+                        }
+                        else
+                            infoBox("You don't have that card", "");
                     }
                     if(development.getSelectedItem().toString()=="2 road"){
+                        if (hasDCard("road building")){
                         firstroad=true;
                         infoBox("Click 2 roads to build", "");
+                        playedd=true;
+                        }
+                        else
+                            infoBox("You don't have that card", "");
+
                     }
+                }
+                    else
+                        infoBox("you have already played a development card", "");
                 }
             if (e.getSource() == build) {
                 if (build.getSelectedItem().toString() == "Settlement") {
@@ -1396,12 +1436,39 @@ public class GUIGameBoard extends JPanel implements ActionListener, MouseListene
 
             if (buildfirsts) {
                 {
+                    boolean flag=true;
                     int count = 0;
                     for (int i = 0; i < 19; i++) {
                         for (int j = 0; j < 6; j++) {
                             Tile curr = GameState.tilesList[i];
                             // System.out.println("TILE "+i+" SPOT "+ j+": x "+curr.getXverticies()[j]+" y "+curr.getYverticies()[j]);
                             if (canFit(e.getX(), e.getY(), curr.getXverticies()[j], curr.getYverticies()[j])) {
+                                Pair y = three(j);
+
+                                Pair x = two(j);
+                                if (curr.gethascityorsettlement()[x.first()] == 1 || curr.gethascityorsettlement()[x.first()] == 2 || curr.gethascityorsettlement()[x.second()] == 1 || curr.gethascityorsettlement()[x.second()] == 2) {
+                                    String c = GameState.players.get(GameState.getCurrentPlayer()).getColor();
+
+
+
+                                    flag =false;
+//                            else if (curr.getSettlementColor()[x.second()].equals(c) && curr.getSettlementColor()[x.second()]==(null)) {
+//                                flag = true;
+//                            }
+//                            else if (curr.getSettlementColor()[x.second()]==(null) && curr.getSettlementColor()[x.second()].equals(c)) {
+//                                flag = true;
+//                            }
+
+                                }
+                            }
+                        }
+                    }
+
+                    for (int i = 0; i < 19; i++) {
+                        for (int j = 0; j < 6; j++) {
+                            Tile curr = GameState.tilesList[i];
+                            // System.out.println("TILE "+i+" SPOT "+ j+": x "+curr.getXverticies()[j]+" y "+curr.getYverticies()[j]);
+                            if (canFit(e.getX(), e.getY(), curr.getXverticies()[j], curr.getYverticies()[j])&&flag) {
                                 curr.gethascityorsettlement()[j] = 1;
                                 GameState.players.get(GameState.getCurrentPlayer()).getHasCity()[i][j] = 1;
                                 if (!curr.getPlayersOnTile().contains(GameState.players.get(GameState.getCurrentPlayer())))
@@ -1424,7 +1491,7 @@ public class GUIGameBoard extends JPanel implements ActionListener, MouseListene
             }
             if (xor&&buildfirstr) {
                 int count = 0;
-                boolean flag = false;
+                boolean flag = true;
                 for (int i = 0; i < 19; i++) {
                     for (int j = 0; j < 6; j++) {
                         Tile curr = GameState.tilesList[i];
@@ -1526,7 +1593,33 @@ public class GUIGameBoard extends JPanel implements ActionListener, MouseListene
             boolean xor=true;
             if (buildfirsts) {
                 {
+                    boolean flag=true;
                     int count = 0;
+                    for (int i = 0; i < 19; i++) {
+                        for (int j = 0; j < 6; j++) {
+                            Tile curr = GameState.tilesList[i];
+                            // System.out.println("TILE "+i+" SPOT "+ j+": x "+curr.getXverticies()[j]+" y "+curr.getYverticies()[j]);
+                            if (canFit(e.getX(), e.getY(), curr.getXverticies()[j], curr.getYverticies()[j])) {
+                                Pair y = three(j);
+
+                                Pair x = two(j);
+                                if (curr.gethascityorsettlement()[x.first()] == 1 || curr.gethascityorsettlement()[x.first()] == 2 || curr.gethascityorsettlement()[x.second()] == 1 || curr.gethascityorsettlement()[x.second()] == 2) {
+                                    String c = GameState.players.get(GameState.getCurrentPlayer()).getColor();
+
+
+
+                                    flag =false;
+//                            else if (curr.getSettlementColor()[x.second()].equals(c) && curr.getSettlementColor()[x.second()]==(null)) {
+//                                flag = true;
+//                            }
+//                            else if (curr.getSettlementColor()[x.second()]==(null) && curr.getSettlementColor()[x.second()].equals(c)) {
+//                                flag = true;
+//                            }
+
+                                }
+                            }
+                        }
+                    }
                     int t1=-1;
                     int t2=-1;
                     int t3=-1;
@@ -1534,7 +1627,7 @@ public class GUIGameBoard extends JPanel implements ActionListener, MouseListene
                         for (int j = 0; j < 6; j++) {
                             Tile curr = GameState.tilesList[i];
                             // System.out.println("TILE "+i+" SPOT "+ j+": x "+curr.getXverticies()[j]+" y "+curr.getYverticies()[j]);
-                            if (canFit(e.getX(), e.getY(), curr.getXverticies()[j], curr.getYverticies()[j])) {
+                            if (canFit(e.getX(), e.getY(), curr.getXverticies()[j], curr.getYverticies()[j])&&flag) {
                                 curr.gethascityorsettlement()[j] = 1;
                                 GameState.players.get(GameState.getCurrentPlayer()).getHasCity()[i][j] = 1;
                                 if(t1==-1){
@@ -1583,14 +1676,7 @@ public class GUIGameBoard extends JPanel implements ActionListener, MouseListene
 //                        //curr.gethascityorsettlement()[j] = 1;
                             Pair x = two(j);
                             if (curr.gethascityorsettlement()[x.first()] == 1 || curr.gethascityorsettlement()[x.first()] == 2 || curr.gethascityorsettlement()[x.second()] == 1 || curr.gethascityorsettlement()[x.second()] == 2) {
-                                String c = GameState.players.get(GameState.getCurrentPlayer()).getColor();
-//                              if(!curr.getSettlementColor()[x.first()].equals(null)&&curr.getSettlementColor()[x.first()].equals(c)||curr.getSettlementColor()[x.second()].equals(c))
-//                                flag=true;
-                                if ((curr.getSettlementColor()[x.first()]) == null && curr.getSettlementColor()[x.second()].equals(c)) {
-                                    flag = true;
-                                } else if (curr.getSettlementColor()[x.first()].equals(c) && curr.getSettlementColor()[x.second()] == (null)) {
-                                    flag = true;
-                                }
+                              flag=true;
 //                            else if (curr.getSettlementColor()[x.second()].equals(c) && curr.getSettlementColor()[x.second()]==(null)) {
 //                                flag = true;
 //                            }
@@ -1932,13 +2018,61 @@ public class GUIGameBoard extends JPanel implements ActionListener, MouseListene
             }
 
         {
-        if (buildSettlement){
+        if (buildSettlement&&GameState.players.get(GameState.getCurrentPlayer()).buildInfrastructure("settlement",0, 0)){
             int count=0;
+            boolean flag=false;
             for (int i = 0; i < 19; i++) {
                 for (int j = 0; j < 6; j++) {
                     Tile curr = GameState.tilesList[i];
                     // System.out.println("TILE "+i+" SPOT "+ j+": x "+curr.getXverticies()[j]+" y "+curr.getYverticies()[j]);
                     if (canFit(e.getX(), e.getY(), curr.getXverticies()[j], curr.getYverticies()[j])) {
+                        Pair y = three(j);
+                        if (curr.getVertexRoads()[y.first()] || curr.getVertexRoads()[y.second()]) {
+                            String c = GameState.players.get(GameState.getCurrentPlayer()).getColor();
+                            if (curr.getVertexColor()[y.first()] == null && curr.getVertexColor()[y.second()] == null) {
+
+                            } else if (curr.getVertexColor()[y.second()] == null) {
+                                if (curr.getVertexColor()[y.first()].equals(c)) {
+                                    flag = true;
+                                }
+
+                            } else if (curr.getVertexColor()[y.first()] == null) {
+
+                                if (curr.getVertexColor()[y.second()].equals(c))
+                                    flag = true;
+                            } else if (curr.getVertexColor()[y.first()].equals(c) && curr.getVertexColor()[y.first()].equals(c)) {
+                                flag = true;
+                            } else {
+
+                            }
+                        }
+                        Pair x = two(j);
+                        if (curr.gethascityorsettlement()[x.first()] == 1 || curr.gethascityorsettlement()[x.first()] == 2 || curr.gethascityorsettlement()[x.second()] == 1 || curr.gethascityorsettlement()[x.second()] == 2) {
+                            String c = GameState.players.get(GameState.getCurrentPlayer()).getColor();
+
+
+
+                           flag =false;
+//                            else if (curr.getSettlementColor()[x.second()].equals(c) && curr.getSettlementColor()[x.second()]==(null)) {
+//                                flag = true;
+//                            }
+//                            else if (curr.getSettlementColor()[x.second()]==(null) && curr.getSettlementColor()[x.second()].equals(c)) {
+//                                flag = true;
+//                            }
+
+                        }
+                    }
+                }
+            }
+
+
+
+
+            for (int i = 0; i < 19; i++) {
+                for (int j = 0; j < 6; j++) {
+                    Tile curr = GameState.tilesList[i];
+                    // System.out.println("TILE "+i+" SPOT "+ j+": x "+curr.getXverticies()[j]+" y "+curr.getYverticies()[j]);
+                    if (canFit(e.getX(), e.getY(), curr.getXverticies()[j], curr.getYverticies()[j])&&flag) {
                         curr.gethascityorsettlement()[j] = 1;
                         GameState.players.get(GameState.getCurrentPlayer()).getHasCity()[i][j] = 1;
                         if(!curr.getPlayersOnTile().contains(GameState.players.get(GameState.getCurrentPlayer())))
@@ -1949,14 +2083,19 @@ public class GUIGameBoard extends JPanel implements ActionListener, MouseListene
 
                         buildSettlement = false;
                     }
+
                 }
+            }
+            if(!flag){
+
             }
             if(count!=0)
                 GameState.players.get(GameState.getCurrentPlayer()).setSettlements(GameState.players.get(GameState.getCurrentPlayer()).settlementNumber()-1);
             repaint();
         }
         buildSettlement = false;
-        if(buildCity&&GameState.players.get(GameState.getCurrentPlayer()).buildInfrastructure("city",0, 0)){
+        //&&GameState.players.get(GameState.getCurrentPlayer()).buildInfrastructure("city",0, 0)
+        if(buildCity){
             int count=0;
             for (int i = 0; i < 19; i++) {
                 for (int j = 0; j < 6; j++) {

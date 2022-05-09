@@ -224,7 +224,8 @@ public class GameState {
 
     public void nextTurn() {
         currentPlayer = (currentPlayer + 1) % players.size();
-     //   System.out.println(currentPlayer);
+        p.getGUIGameBoard().setPlayedd(false);
+        //   System.out.println(currentPlayer);
     }
     public void nextTurn2() {
         if(currentPlayer-1>=0){
